@@ -6,6 +6,10 @@ func isDigit(ch rune) bool {
 	return ch >= '0' && ch <= '9'
 }
 
+func isSeparator(ch rune) bool {
+	return ch == ',' || ch == '\n'
+}
+
 func Sum(numbers string) int {
 	result := 0
 	number := ""
@@ -13,7 +17,7 @@ func Sum(numbers string) int {
 		if isDigit(ch) {
 			number += string(ch)
 		}
-		if ch == ',' {
+		if isSeparator(ch) {
 			parsedNumber, _ := strconv.Atoi(number)
 			result += parsedNumber
 			number = ""

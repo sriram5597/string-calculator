@@ -29,6 +29,12 @@ func TestStringCalculator(t *testing.T) {
 			Input:    "32,43,25",
 			Expected: 100,
 		},
+		{
+			Name: "Calculates the sum of all the numbers when numbers are given with comma separated",
+			Input: `32
+			43,25`,
+			Expected: 100,
+		},
 	}
 
 	for _, testCase := range testCases {

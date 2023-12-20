@@ -20,27 +20,43 @@ func TestStringCalculator(t *testing.T) {
 			Expected: 32,
 		},
 		{
-			Name:     "Calculates the sum of two numbers when two numbers are given with comma separated",
+			Name:     "Calculates the sum of two numbers when two numbers are separated by comma",
 			Input:    "32,43",
 			Expected: 75,
 		},
 		{
-			Name:     "Calculates the sum of all the numbers when numbers are given with comma separated",
+			Name:     "Calculates the sum of all the numbers when numbers are separated by comma",
 			Input:    "32,43,25",
 			Expected: 100,
 		},
 		{
-			Name: "Calculates the sum of all the numbers when numbers are given with comma separated",
+			Name: "Calculates the sum of all the numbers when numbers are separated by comma and newline",
 			Input: `32
 			43,25`,
 			Expected: 100,
+		},
+		{
+			Name: "Calculates the sum of all the numbers when numbers are separated by the seperator given in the first line",
+			Input: `\;
+			32;43;25`,
+			Expected: 100,
+		},
+		{
+			Name: "Error should be thrown with the negative number when negative number is provided",
+			Input: `\;
+			32;-43;25`,
+			Error: "negatives not allowed: [-43]",
 		},
 	}
 
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
-			res := string_calculator.Sum(testCase.Input)
-			assert.Equal(t, testCase.Expected, res, "verifying result")
+			res, err := string_calculator.Sum(testCase.Input)
+			if testCase.Error != "" {
+				assert.Equal(t, testCase.Error, err.Error(), "verifying error message")
+			} else {
+				assert.Equal(t, testCase.Expected, res, "verifying result")
+			}
 		})
 	}
 }

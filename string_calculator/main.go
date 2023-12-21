@@ -17,6 +17,9 @@ func (calc *StringCalculator) parseAndAdd(currentSum int, number string) int {
 	if parsedNumber < 0 {
 		calc.negativeNumbers = append(calc.negativeNumbers, fmt.Sprintf("%d", parsedNumber))
 	}
+	if parsedNumber >= 1000 {
+		return currentSum
+	}
 	sum := currentSum + parsedNumber
 	return sum
 }
@@ -34,7 +37,13 @@ func (calc *StringCalculator) isDelimiter(ch rune) bool {
 	return ch == ',' || ch == '\n'
 }
 
+func (calc *StringCalculator) reset() {
+	calc.negativeNumbers = []string{}
+	calc.delimiter = 0
+}
+
 func (calc *StringCalculator) Sum(expression string) (int, error) {
+	calc.reset()
 	calc.setDelimiter(expression)
 	result := 0
 	number := ""

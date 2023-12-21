@@ -47,6 +47,12 @@ func TestStringCalculator(t *testing.T) {
 			32;-43;-25;-40`,
 			Error: "negatives not allowed: [-43,-25,-40]",
 		},
+		{
+			Name: "numbers greater than 1000 should be skipped",
+			Input: `\;
+			32;43;1000;25;1234`,
+			Expected: 100,
+		},
 	}
 	calc := string_calculator.StringCalculator{}
 	for _, testCase := range testCases {

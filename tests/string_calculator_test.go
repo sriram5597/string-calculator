@@ -42,10 +42,10 @@ func TestStringCalculator(t *testing.T) {
 			Expected: 100,
 		},
 		{
-			Name: "Error should be thrown with the negative number when negative number is provided",
+			Name: "Error should be thrown with all negative numbers when negative numbers are provided",
 			Input: `\;
-			32;-43;25`,
-			Error: "negatives not allowed: [-43]",
+			32;-43;-25;-40`,
+			Error: "negatives not allowed: [-43,-25,-40]",
 		},
 	}
 

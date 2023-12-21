@@ -9,7 +9,7 @@ import (
 type StringCalculator struct {
 	calledCount     int
 	negativeNumbers []string
-	delimiter       string
+	delimiter       map[string]bool
 }
 
 func (calc *StringCalculator) parseAndAdd(currentSum int, number string) int {
@@ -25,46 +25,48 @@ func (calc *StringCalculator) parseAndAdd(currentSum int, number string) int {
 }
 
 func (calc *StringCalculator) setDelimiter(expression string) {
-	delimiter := []byte{}
 	if len(expression) > 0 && expression[0] == '\\' {
 		if expression[1] == '[' {
-			ind := 2
-			for expression[ind] != ']' {
-				delimiter = append(delimiter, expression[ind])
-				ind++
-			}
+			calc.delimiter = getDelimiterFromExpression(expression)
 		} else {
-			delimiter = append(delimiter, expression[1])
+			calc.delimiter = map[string]bool{
+				string(expression[1]): true,
+			}
+		}
+	} else {
+		calc.delimiter = map[string]bool{
+			"\n": true,
+			",":  true,
 		}
 	}
-	calc.delimiter = string(delimiter)
 }
 
 func (calc *StringCalculator) isValidDelimiter(delimiter string) bool {
-	return delimiter == "" || delimiter == "," || delimiter == "\n" || delimiter == calc.delimiter
+	_, ok := calc.delimiter[delimiter]
+	return delimiter == "" || ok
 }
 
 func (calc *StringCalculator) reset() {
+	calc.calledCount++
 	calc.negativeNumbers = []string{}
-	calc.delimiter = ""
+	calc.delimiter = map[string]bool{}
 }
 
-func (calc *StringCalculator) Sum(expression string) (int, error) {
-	calc.setDelimiter(expression)
-	defer func() {
-		calc.calledCount++
-		calc.reset()
-	}()
+func (calc *StringCalculator) Sum(exp string) (int, error) {
+	delimiterString, expression := splitExrepressionAndDelimiter(exp)
+	calc.setDelimiter(delimiterString)
+	defer calc.reset() // similar to finally block in java
 	result := 0
 	number := ""
 	delimiter := []byte{}
-	extractedExpression := extractExpression(expression)
-	for _, ch := range extractedExpression {
+	for _, ch := range expression {
 		if isDigit(ch) {
 			if !calc.isValidDelimiter(string(delimiter)) {
 				return 0, fmt.Errorf("invalid expression")
 			}
-			delimiter = []byte{}
+			if len(number) == 0 {
+				delimiter = []byte{}
+			}
 			number += string(ch)
 		} else {
 			if len(delimiter) == 0 {

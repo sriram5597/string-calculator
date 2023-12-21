@@ -65,6 +65,12 @@ func TestStringCalculator(t *testing.T) {
 			32**43++25`,
 			Error: "invalid expression",
 		},
+		{
+			Name: "Calculates the sum of all the numbers when numbers are separated by multiple delimiters with multiple characters",
+			Input: `\[**][++]
+			32**43++25`,
+			Expected: 100,
+		},
 	}
 	calc := string_calculator.StringCalculator{}
 	for _, testCase := range testCases {

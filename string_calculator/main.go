@@ -6,6 +6,10 @@ import (
 	"strings"
 )
 
+var (
+	calledCount int
+)
+
 func isDigit(ch rune) bool {
 	return (ch >= '0' && ch <= '9') || ch == '-'
 }
@@ -44,8 +48,13 @@ func Sum(expression string) (int, error) {
 		}
 	}
 	result = addNumber(result, number, &negativeNumbers)
+	calledCount++
 	if len(negativeNumbers) > 0 {
 		return 0, fmt.Errorf("negatives not allowed: [%s]", strings.Join(negativeNumbers, ","))
 	}
 	return result, nil
+}
+
+func GetCalledCount() int {
+	return calledCount
 }

@@ -59,4 +59,5 @@ func TestStringCalculator(t *testing.T) {
 			}
 		})
 	}
+	assert.Equal(t, len(testCases), string_calculator.GetCalledCount(), "verifying the called count is equal to number test executions")
 }

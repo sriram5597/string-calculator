@@ -6,55 +6,55 @@ import (
 	"strings"
 )
 
-var (
-	calledCount int
-)
-
-func isDigit(ch rune) bool {
-	return (ch >= '0' && ch <= '9') || ch == '-'
+type StringCalculator struct {
+	calledCount     int
+	negativeNumbers []string
+	delimiter       rune
 }
 
-func isDelimiter(ch, delimiter rune) bool {
-	if delimiter != 0 {
-		return ch == delimiter
-	}
-	return ch == ',' || ch == '\n'
-}
-
-func addNumber(currentSum int, number string, negativeNumbers *[]string) int {
+func (calc *StringCalculator) parseAndAdd(currentSum int, number string) int {
 	parsedNumber, _ := strconv.Atoi(number)
 	if parsedNumber < 0 {
-		*negativeNumbers = append(*negativeNumbers, fmt.Sprintf("%d", parsedNumber))
+		calc.negativeNumbers = append(calc.negativeNumbers, fmt.Sprintf("%d", parsedNumber))
 	}
 	sum := currentSum + parsedNumber
 	return sum
 }
 
-func Sum(expression string) (int, error) {
+func (calc *StringCalculator) setDelimiter(expression string) {
+	if len(expression) > 0 && expression[0] == '\\' {
+		calc.delimiter = rune(expression[1])
+	}
+}
+
+func (calc *StringCalculator) isDelimiter(ch rune) bool {
+	if calc.delimiter != 0 {
+		return ch == calc.delimiter
+	}
+	return ch == ',' || ch == '\n'
+}
+
+func (calc *StringCalculator) Sum(expression string) (int, error) {
+	calc.setDelimiter(expression)
 	result := 0
 	number := ""
-	var delimiter rune
-	if len(expression) > 0 && expression[0] == '\\' {
-		delimiter = rune(expression[1])
-	}
-	var negativeNumbers []string
 	for _, ch := range expression {
 		if isDigit(ch) {
 			number += string(ch)
 		}
-		if isDelimiter(ch, delimiter) {
-			result = addNumber(result, number, &negativeNumbers)
+		if calc.isDelimiter(ch) {
+			result = calc.parseAndAdd(result, number)
 			number = ""
 		}
 	}
-	result = addNumber(result, number, &negativeNumbers)
-	calledCount++
-	if len(negativeNumbers) > 0 {
-		return 0, fmt.Errorf("negatives not allowed: [%s]", strings.Join(negativeNumbers, ","))
+	result = calc.parseAndAdd(result, number)
+	calc.calledCount++
+	if len(calc.negativeNumbers) > 0 {
+		return 0, fmt.Errorf("negatives not allowed: [%s]", strings.Join(calc.negativeNumbers, ","))
 	}
 	return result, nil
 }
 
-func GetCalledCount() int {
-	return calledCount
+func (calc *StringCalculator) GetCalledCount() int {
+	return calc.calledCount
 }

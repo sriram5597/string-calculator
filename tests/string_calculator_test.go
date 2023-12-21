@@ -48,16 +48,19 @@ func TestStringCalculator(t *testing.T) {
 			Error: "negatives not allowed: [-43,-25,-40]",
 		},
 	}
-
+	calc := string_calculator.StringCalculator{}
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
-			res, err := string_calculator.Sum(testCase.Input)
+			res, err := calc.Sum(testCase.Input)
 			if testCase.Error != "" {
+				if err == nil {
+					assert.Fail(t, "expecting error")
+				}
 				assert.Equal(t, testCase.Error, err.Error(), "verifying error message")
 			} else {
 				assert.Equal(t, testCase.Expected, res, "verifying result")
 			}
 		})
 	}
-	assert.Equal(t, len(testCases), string_calculator.GetCalledCount(), "verifying the called count is equal to number test executions")
+	assert.Equal(t, len(testCases), calc.GetCalledCount(), "verifying the called count is equal to number test executions")
 }

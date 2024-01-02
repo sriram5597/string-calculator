@@ -42,6 +42,9 @@ func (calc *StringCalculator) setDelimiter(expression string) {
 			if isMultiply(delimiter) {
 				calc.operation = MULTIPLY
 				calc.result = 1
+			} else {
+				calc.operation = SUM
+				calc.result = 0
 			}
 			calc.delimiter = delimiter
 		} else {

@@ -23,7 +23,7 @@ func main() {
 		buffer.WriteString(line + "\n")
 	}
 	calculator := string_calculator.StringCalculator{}
-	result, err := calculator.Sum(buffer.String())
+	result, err := calculator.Calculate(buffer.String())
 	if err != nil {
 		fmt.Println("error: ", err.Error())
 		os.Exit(1)

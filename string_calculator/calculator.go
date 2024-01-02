@@ -6,28 +6,44 @@ import (
 	"strings"
 )
 
+const (
+	SUM      = iota
+	MULTIPLY = iota
+)
+
 type StringCalculator struct {
 	calledCount     int
 	negativeNumbers []string
 	delimiter       map[string]bool
+	operation       int
+	result          int
 }
 
-func (calc *StringCalculator) parseAndAdd(currentSum int, number string) int {
+func (calc *StringCalculator) parseAndCalculate(number string) {
 	parsedNumber, _ := strconv.Atoi(number)
 	if parsedNumber < 0 {
 		calc.negativeNumbers = append(calc.negativeNumbers, fmt.Sprintf("%d", parsedNumber))
 	}
 	if parsedNumber >= 1000 {
-		return currentSum
+		return
 	}
-	sum := currentSum + parsedNumber
-	return sum
+	switch calc.operation {
+	case MULTIPLY:
+		calc.result *= parsedNumber
+	default:
+		calc.result += parsedNumber
+	}
 }
 
 func (calc *StringCalculator) setDelimiter(expression string) {
 	if len(expression) > 0 && expression[0] == '\\' {
 		if expression[1] == '[' {
-			calc.delimiter = getDelimiterFromExpression(expression)
+			delimiter := getDelimiterFromExpression(expression)
+			if isMultiply(delimiter) {
+				calc.operation = MULTIPLY
+				calc.result = 1
+			}
+			calc.delimiter = delimiter
 		} else {
 			calc.delimiter = map[string]bool{
 				string(expression[1]): true,
@@ -50,13 +66,13 @@ func (calc *StringCalculator) reset() {
 	calc.calledCount++
 	calc.negativeNumbers = []string{}
 	calc.delimiter = map[string]bool{}
+	calc.result = calc.operation
 }
 
-func (calc *StringCalculator) Sum(exp string) (int, error) {
+func (calc *StringCalculator) Calculate(exp string) (int, error) {
 	delimiterString, expression := splitExrepressionAndDelimiter(exp)
 	calc.setDelimiter(delimiterString)
 	defer calc.reset() // similar to finally block in java
-	result := 0
 	number := ""
 	delimiter := []byte{}
 	for _, ch := range expression {
@@ -70,17 +86,17 @@ func (calc *StringCalculator) Sum(exp string) (int, error) {
 			number += string(ch)
 		} else {
 			if len(delimiter) == 0 {
-				result = calc.parseAndAdd(result, number)
+				calc.parseAndCalculate(number)
 				number = ""
 			}
 			delimiter = append(delimiter, byte(ch))
 		}
 	}
-	result = calc.parseAndAdd(result, number)
+	calc.parseAndCalculate(number)
 	if len(calc.negativeNumbers) > 0 {
 		return 0, fmt.Errorf("negatives not allowed: [%s]", strings.Join(calc.negativeNumbers, ","))
 	}
-	return result, nil
+	return calc.result, nil
 }
 
 func (calc *StringCalculator) GetCalledCount() int {

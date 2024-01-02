@@ -34,3 +34,14 @@ func getDelimiterFromExpression(expression string) map[string]bool {
 	}
 	return delimiterMap
 }
+
+func isMultiply(delimiter map[string]bool) bool {
+	for k, _ := range delimiter {
+		for i := 0; i < len(k); i++ {
+			if k[i] != '*' {
+				return false
+			}
+		}
+	}
+	return true
+}

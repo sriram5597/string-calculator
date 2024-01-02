@@ -55,27 +55,45 @@ func TestStringCalculator(t *testing.T) {
 		},
 		{
 			Name: "Calculates the sum of all the numbers when numbers are separated by the seperator with multiple characters",
-			Input: `\[**]
-			32**43**25`,
+			Input: `\[??]
+			32??43??25`,
 			Expected: 100,
 		},
 		{
 			Name: "Reports an error if delimiter which is not configured is provieded",
-			Input: `\[**]
-			32**43++25`,
+			Input: `\[??]
+			32??43++25`,
 			Error: "invalid expression",
 		},
 		{
 			Name: "Calculates the sum of all the numbers when numbers are separated by multiple delimiters with multiple characters",
-			Input: `\[**][++]
-			32**43++25`,
+			Input: `\[??][++]
+			32??43++25`,
 			Expected: 100,
+		},
+		{
+			Name: "Calculates the product of all the numbers when numbers are separated by *",
+			Input: `\[*]
+			2*4*6`,
+			Expected: 48,
+		},
+		{
+			Name: "Calculates the product of all the numbers when numbers are separated by * with multiple occurences",
+			Input: `\[***]
+			2***4***6`,
+			Expected: 48,
+		},
+		{
+			Name: "Calculates the product of all the numbers when numbers are separated by having * and other delimiters",
+			Input: `\[??][***]
+			2***4??6`,
+			Expected: 48,
 		},
 	}
 	calc := string_calculator.StringCalculator{}
 	for _, testCase := range testCases {
 		t.Run(testCase.Name, func(t *testing.T) {
-			res, err := calc.Sum(testCase.Input)
+			res, err := calc.Calculate(testCase.Input)
 			if testCase.Error != "" {
 				if err == nil {
 					assert.Fail(t, "expecting error")
